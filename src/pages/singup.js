@@ -4,8 +4,10 @@ import FirebaseContext from '../context/firebase'
 import * as ROUTES from '../constants/routes'
 import { doesUsernameExists } from '../services/firebase'
 
-export default function Login() {
+export default function SingUp() {
   const history = useNavigate()
+  const [username, setUsername] = useState('')
+  const [fullname, setFullname] = useState('')
 
   const { firebase } = useContext(FirebaseContext)
   const [emailAddress, setEmailAdress] = useState('')
@@ -15,25 +17,50 @@ export default function Login() {
 
   const isInvalid = password === '' || emailAddress === ''
 
-  const handleLogin = async (event) => {
+  const handleSingUp = async (event) => {
     event.preventDefault()
 
-    try {
-      await firebase.auth().signInWithEmailAndPassword(emailAddress, password)
-      history(ROUTES.DASHBOARD)
-    } catch (error) {
-      setEmailAdress('')
-      setPassword('')
-      setError(error.message)
-      /* const errorCode = error.code
-      const errorMessage = error.message
-      console.log(errorCode)
-      console.log(errorMessage) */
+    const usernameExists = await doesUsernameExists(username)
+
+    console.log(usernameExists.length)
+    if (usernameExists.length == 0) {
+      try {
+        const createdUser = await firebase
+          .auth()
+          .createUserWithEmailAndPassword(emailAddress, password)
+        /* 
+        await firebase.createdUser.updateProfile({
+          displayName: username,
+        }) */
+
+        await firebase.firestore().collection('users').add({
+          userId: createdUser.user.uid,
+          username: username.toLowerCase(),
+          fullName: fullname,
+          emailAddress: emailAddress.toLowerCase(),
+          following: [],
+          followers: [],
+          dateCreated: Date.now(),
+        })
+
+        history(ROUTES.LOGIN)
+      } catch (error) {
+        setFullname('')
+        setUsername('')
+        setEmailAdress('')
+        setPassword('')
+        setError(error)
+        console.log(error)
+      }
+    } else {
+      setError('Ya existe el usuario.')
     }
+
+    console.log(usernameExists)
   }
 
   useEffect(() => {
-    document.title = 'Login -Instagram'
+    document.title = 'SingUp -Instagram'
   }, [])
 
   return (
@@ -56,7 +83,27 @@ export default function Login() {
 
           {error && <p className='mb-4 text-xs text-red-400'>{error}</p>}
 
-          <form onSubmit={handleLogin} method='POST'>
+          <form onSubmit={handleSingUp} method='POST'>
+            <input
+              aria-label='Ingresa tu usuario'
+              type='text'
+              placeholder='Username'
+              className='text-left text-sm text-gray-base w-full mr-2 py-5 px-5 h-2
+            border border-gray-primary rounded mb-5
+            '
+              onChange={({ target }) => setUsername(target.value)}
+            />
+
+            <input
+              aria-label='Ingresa tu nombre completo'
+              type='text'
+              placeholder='Fullname'
+              className='text-left text-sm text-gray-base w-full mr-2 py-5 px-5 h-2
+            border border-gray-primary rounded mb-5
+            '
+              onChange={({ target }) => setFullname(target.value)}
+            />
+
             <input
               aria-label='Ingresa tu email'
               type='text'
@@ -83,7 +130,7 @@ export default function Login() {
             ${isInvalid && `opacity-50`}
             `}
             >
-              Ingresar
+              Registrarse
             </button>
           </form>
         </div>
@@ -93,9 +140,9 @@ export default function Login() {
       '
         >
           <p className='text-sm text-grey-primary'>
-            No tiene una cuenta ? {``}
-            <Link to='/singup' className='font-bold text-black'>
-              Registrarse
+            Tiene una cuenta ? {``}
+            <Link to='/login' className='font-bold text-black'>
+              Ingresar
             </Link>
           </p>
         </div>

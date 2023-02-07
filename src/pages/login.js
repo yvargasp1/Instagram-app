@@ -2,7 +2,6 @@ import { useState, useContext, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import FirebaseContext from '../context/firebase'
 import * as ROUTES from '../constants/routes'
-import { doesUsernameExists } from '../services/firebase'
 
 export default function Login() {
   const history = useNavigate()
@@ -50,7 +49,10 @@ export default function Login() {
             <img
               src='/images/logo.png'
               alt='Instagram'
-              className='mt-2 w-6/12 mb-4'
+              className='mt-2 w-6/12 mb-4 cursor-pointer'
+              onClick={() => {
+                history(ROUTES.DASHBOARD)
+              }}
             />
           </h1>
 

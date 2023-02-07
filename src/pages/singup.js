@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import FirebaseContext from '../context/firebase'
 import * as ROUTES from '../constants/routes'
 import { doesUsernameExists } from '../services/firebase'
+import { updateProfile } from 'firebase/auth'
 
 export default function SingUp() {
   const history = useNavigate()
@@ -23,15 +24,23 @@ export default function SingUp() {
     const usernameExists = await doesUsernameExists(username)
 
     console.log(usernameExists.length)
-    if (usernameExists.length == 0) {
+    if (usernameExists.length === 0) {
       try {
         const createdUser = await firebase
           .auth()
           .createUserWithEmailAndPassword(emailAddress, password)
-        /* 
-        await firebase.createdUser.updateProfile({
+
+        console.log('Usuario', createdUser)
+
+        await updateProfile(createdUser.user, {
           displayName: username,
-        }) */
+        })
+          .then(() => {
+            console.log('bien')
+          })
+          .catch((error) => {
+            setError(error)
+          })
 
         await firebase.firestore().collection('users').add({
           userId: createdUser.user.uid,

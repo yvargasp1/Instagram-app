@@ -24,7 +24,7 @@ const User = ({ username, fullName }) =>
         <p className='font-bold text-sm'>{username}</p>
         <p className='text-sm'>{fullName}</p>
       </div>
-      <p>{username}</p>
+   
     </Link>
   )
 

@@ -44,7 +44,7 @@ export async function getsuggestedProfiles(userId, following) {
 }
 
 export async function updateUserFollows(userdocId, profileId, IsFollow) {
-  const result = await firebase
+  await firebase
     .firestore()
     .collection('users')
     .doc(userdocId)
@@ -58,7 +58,7 @@ export async function updateUserFollows(userdocId, profileId, IsFollow) {
     })
 }
 export async function updateFollowUser(docId, userId, IsFollow) {
-  const result = await firebase
+  await firebase
     .firestore()
     .collection('users')
     .doc(docId)
@@ -70,4 +70,33 @@ export async function updateFollowUser(docId, userId, IsFollow) {
     .then(function () {
       console.log('updated followers', docId)
     })
+}
+
+export async function getPhotos(userId, following) {
+  const result = await firebase
+    .firestore()
+    .collection('photos')
+    .where('userId', 'in', following[0].following)
+    .get()
+
+  const userFollowedPhotos = result.docs.map((photo) => ({
+    ...photo.data(),
+    docId: photo.id,
+  }))
+
+  const photosWithUserDetails = await Promise.all(
+    userFollowedPhotos.map(async (photo) => {
+      let userLikePhoto = false
+
+      if (photo.likes.includes(userId)) {
+        userLikePhoto = true
+      }
+      const user = await getUserByUserId(photo.userId)
+      const { username } = user[0]
+
+      return { username, ...photo, userLikePhoto }
+    })
+  )
+
+  return photosWithUserDetails
 }

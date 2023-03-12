@@ -100,3 +100,21 @@ export async function getPhotos(userId, following) {
 
   return photosWithUserDetails
 }
+
+
+export async function updateLikes(docId, userId, toggleLiked) {
+  const update = await firebase
+    .firestore()
+    .collection('photos')
+    .doc(docId)
+    .update({
+      likes: toggleLiked
+        ? FieldValue.arrayRemove(userId)
+        : FieldValue.arrayUnion(userId),
+    })
+    .then(function () {
+      console.log('updated likes', docId)
+    })
+
+   
+}

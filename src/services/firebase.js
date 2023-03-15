@@ -1,3 +1,4 @@
+import { func } from 'prop-types'
 import { firebase, FieldValue } from '../lib/firebase'
 
 export async function doesUsernameExists(username) {
@@ -70,6 +71,26 @@ export async function updateFollowUser(docId, userId, IsFollow) {
     .then(function () {
       console.log('updated followers', docId)
     })
+}
+
+export async function getUsersId(Ids){
+
+   const result = await firebase
+     .firestore()
+     .collection('users')
+     .where('userId', 'in', Ids)
+     .get()
+
+    
+
+     const userLikes = result.docs.map((likes) => ({
+        ...likes.data(),
+      }))
+
+      //console.log('result', userLikes)
+
+      return userLikes
+
 }
 
 export async function getPhotos(userId, following) {

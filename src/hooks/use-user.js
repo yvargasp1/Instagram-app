@@ -1,8 +1,6 @@
 import { useState, useEffect, useContext } from 'react'
 import UserContext from '../context/user'
 
-import UseContext from '../context/user'
-
 import { getUserByUserId } from '../services/firebase'
 
 export default function useUser() {
@@ -21,5 +19,5 @@ export default function useUser() {
     }
   }, [user])
 
-  return{user:activateUser}
+  return { user: activateUser }
 }

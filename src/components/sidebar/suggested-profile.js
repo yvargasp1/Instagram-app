@@ -30,7 +30,8 @@ export default function SuggestedProfile({
         </Link>
       </div>
       <div>
-        <button className='border  rounded-sm text-gray-primary  p-2'>
+        <button className=
+        'border  rounded-sm text-gray-primary  p-2'>
           <svg
             viewBox='0 0 1024 1024'
             fill='currentColor'

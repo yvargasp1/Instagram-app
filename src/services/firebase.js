@@ -124,7 +124,7 @@ export async function getPhotos(userId, following) {
 
 
 export async function updateLikes(docId, userId, toggleLiked) {
-  const update = await firebase
+await firebase
     .firestore()
     .collection('photos')
     .doc(docId)
@@ -138,4 +138,18 @@ export async function updateLikes(docId, userId, toggleLiked) {
     })
 
    
+}
+
+export async function updateComments(docId, displayName, comment) {
+
+   await firebase
+    .firestore()
+    .collection('photos')
+    .doc(docId)
+    .update({
+      comments: FieldValue.arrayUnion({ displayName, comment }),
+    })
+    .then(function () {
+      console.log('updated comments', docId)
+    })
 }

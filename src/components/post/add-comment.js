@@ -16,7 +16,7 @@ export default function AddComment({
   } = useContext(UserContext)
 
   const handleSubmitComment = (event) => {
-   console.log('button works',event)
+
 
    setComments([{displayName,comment},...comments])
    setComment('')

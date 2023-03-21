@@ -1,4 +1,5 @@
 import { func } from 'prop-types'
+import user from '../components/sidebar/user'
 import { firebase, FieldValue } from '../lib/firebase'
 
 export async function doesUsernameExists(username) {
@@ -10,6 +11,18 @@ export async function doesUsernameExists(username) {
 
   console.log(result)
   return result.docs.map((user) => user.data().length > 0)
+}
+
+export async function getUsernameExists(username) {
+  const result = await firebase
+    .firestore()
+    .collection('users')
+    .where('username', '==', username)
+    .get()
+
+  const user = result.docs.map((user) => ({ ...user.data(), docId: user.id }))
+
+  return user
 }
 
 export async function getUserByUserId(userId) {
@@ -73,24 +86,20 @@ export async function updateFollowUser(docId, userId, IsFollow) {
     })
 }
 
-export async function getUsersId(Ids){
+export async function getUsersId(Ids) {
+  const result = await firebase
+    .firestore()
+    .collection('users')
+    .where('userId', 'in', Ids)
+    .get()
 
-   const result = await firebase
-     .firestore()
-     .collection('users')
-     .where('userId', 'in', Ids)
-     .get()
+  const userLikes = result.docs.map((likes) => ({
+    ...likes.data(),
+  }))
 
-    
+  //console.log('result', userLikes)
 
-     const userLikes = result.docs.map((likes) => ({
-        ...likes.data(),
-      }))
-
-      //console.log('result', userLikes)
-
-      return userLikes
-
+  return userLikes
 }
 
 export async function getPhotos(userId, following) {
@@ -122,9 +131,8 @@ export async function getPhotos(userId, following) {
   return photosWithUserDetails
 }
 
-
 export async function updateLikes(docId, userId, toggleLiked) {
-await firebase
+  await firebase
     .firestore()
     .collection('photos')
     .doc(docId)
@@ -136,13 +144,10 @@ await firebase
     .then(function () {
       console.log('updated likes', docId)
     })
-
-   
 }
 
 export async function updateComments(docId, displayName, comment) {
-
-   await firebase
+  await firebase
     .firestore()
     .collection('photos')
     .doc(docId)
@@ -152,4 +157,51 @@ export async function updateComments(docId, displayName, comment) {
     .then(function () {
       console.log('updated comments', docId)
     })
+}
+
+export async function getUserIdByUsername(username) {
+  const user = await firebase
+    .firestore()
+    .collection('users')
+    .where('username', '==', username)
+    .get()
+
+  const result = user.docs.map((r) => ({ ...r.data() }))
+  return result[0].userId
+}
+
+export async function getUserPhotosByName(username) {
+  if (username) {
+    const userId = await getUserIdByUsername(username)
+    const result = await firebase
+      .firestore()
+      .collection('photos')
+      .where('userId', '==', userId)
+      .get()
+
+    const photos = result.docs.map((r) => ({ ...r.data() }))
+
+    return photos
+  }
+}
+
+export async function isUserFollowingProfile(LoggedInUser, profileUserId) {
+  
+  console.log('LoggedInUser, profileUserId', LoggedInUser, profileUserId)
+  const r = 
+    await firebase
+    .firestore()
+    .collection('users')
+    .where('username', '==', LoggedInUser)
+    .where('following', 'array-contains', profileUserId)
+    .get()
+
+  const [rs = {}] = r.docs.map((item) => ({
+    ...item.data(),
+  }))
+   console.log('rs', rs)
+
+  return rs.userId
+
+ 
 }

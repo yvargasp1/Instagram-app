@@ -35,7 +35,6 @@ useEffect(()=>{
     <Header/>
     <UserProfile username={username}/>
     <div className='mx-auto max-w-screen-lg'>
-    {user.fullName}
     </div>
    </div>
 

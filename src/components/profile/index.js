@@ -13,6 +13,7 @@ export default function UserProfile({username}) {
     followerCount: 0,
   }
 
+
   const [{ profile, photosCollection, followerCount }, distpatch] = useReducer(
     reducer,
     initialState
@@ -23,7 +24,6 @@ export default function UserProfile({username}) {
     const [user] = await getUsernameExists(username)
     if(username){
      const photos = await getUserPhotosByName(username)
-     console.log('photos',photos)
 
      distpatch({profile:user, photosCollection:photos, followerCount: user.followers.length})
     }
@@ -41,6 +41,7 @@ export default function UserProfile({username}) {
    profile={profile}
    followerCount={followerCount}
    setFollowerCount={distpatch}
+   username={username}
    />
    <Photos photos={photosCollection}/>
    </>

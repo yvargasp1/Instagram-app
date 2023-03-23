@@ -205,3 +205,15 @@ export async function isUserFollowingProfile(LoggedInUser, profileUserId) {
 
  
 }
+
+export async function toggleFollow(isFollowing,activeUserDocId, profileDocId,
+  followingUserId , followerUserId
+  ){
+
+    console.log('docs :',isFollowing, activeUserDocId, profileDocId, followingUserId)
+    await updateUserFollows(activeUserDocId, followingUserId, isFollowing)
+    await updateFollowUser(profileDocId, followerUserId, isFollowing)
+
+    console.log('toggleFollowUpdate');
+
+}

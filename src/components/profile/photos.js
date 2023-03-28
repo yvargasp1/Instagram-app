@@ -6,13 +6,21 @@ export default function Photos({ photos }) {
       <div className='grid grid-cols-3 gap-4 mx-10 mt-4 mb-12'>
         {!photos.length ? (
           <>
-            <Skeleton count={12} width={400} height={400}></Skeleton>
+           
+              {Array(9)
+                .fill()
+                .map((item, index) => (
+                  
+                    <Skeleton key={index} count={1} width={400} height={450}></Skeleton>
+                  
+                ))}
+       
           </>
         ) : photos.length > 0 ? (
           photos.map((photo, index) => (
             <div key={index} className='relative group'>
               <img
-                className='rounded col-span-4 border bg-white border-gray-primary max-w-[450px]'
+                className='rounded col-span-4 border bg-white border-gray-primary h-[500px] max-w-[400px]'
                 src={photo.imageSrc}
                 alt={photo.caption}
               />

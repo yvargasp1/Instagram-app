@@ -6,6 +6,11 @@ module.exports = {
   content: ['./src/**/*.js', './src/**/**/*.js'],
 
   theme: {
+    extend: {
+      animation: {
+        'spin-slow': 'spin 3s linear infinite',
+      }
+    },
     fill: (theme) => ({
       red: theme('colors.red.primary'),
     }),

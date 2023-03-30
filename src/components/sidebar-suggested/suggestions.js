@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import SuggestedProfile from '../sidebar/suggested-profile'
+import SuggestedProfile from './suggested-profile'
 import { getsuggestedProfiles } from '../../services/firebase'
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'

@@ -78,7 +78,7 @@ export default function Actions({
         </div>
       </div>
       <div className='p-4 py-0'>
-        <p className='font-bold text-sm'>
+        <div className='font-bold text-sm'>
           {likes ? (
             <div>
               {likeUser ? (
@@ -103,13 +103,13 @@ export default function Actions({
                   </div>
                 )
               ) : (
-                console.log('null')
+                <></>
               )}
             </div>
           ) : (
             <></>
           )}
-        </p>
+        </div>
       </div>
     </>
   )

@@ -3,6 +3,8 @@ import Firebase from 'firebase/compat/app'
 import 'firebase/compat/auth'
 import 'firebase/compat/firestore'
 
+import {seed, seedDatabase} from '../seed'
+
 const config = {
   apiKey: 'AIzaSyDbuZ5bHn4xzZO6nLS--grfhr4_N0bohPM',
   authDomain: 'instagram-4f43d.firebaseapp.com',
@@ -17,4 +19,6 @@ const { FieldValue } = Firebase.firestore
 
 //console.log('firebase', firebase)
 
+//Agregar datos a firebase
+/* seedDatabase(firebase) */
 export { firebase, FieldValue }

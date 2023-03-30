@@ -1,5 +1,5 @@
 import { func } from 'prop-types'
-import user from '../components/sidebar/user'
+import user from '../components/sidebar-suggested/user'
 import { firebase, FieldValue } from '../lib/firebase'
 
 export async function doesUsernameExists(username) {
@@ -57,6 +57,47 @@ export async function getsuggestedProfiles(userId, following) {
   return usersuggest
 }
 
+export async function getFollowingProfiles(userId, following) {
+  console.log('getFollowingProfiles', userId, following)
+  const result = await firebase
+    .firestore()
+    .collection('users')
+    .where('userId', 'in', following)
+    .get()
+
+  const result2 = await firebase
+    .firestore()
+    .collection('photos-history')
+    .where('userId', 'in', following)
+    .get()
+
+  let array = []
+  const usersuggest = result.docs.map((user) => ({
+    ...user.data(),
+    docId: user.id,
+  }))
+
+  const usersuggestf = result2.docs.map((user) => ({
+    ...user.data(),
+    docId: user.id,
+  }))
+
+  for (let i = 0; i < usersuggest.length; i++) {
+    for (let j = 0; j < usersuggestf.length; j++) {
+      if (usersuggest[i].userId == usersuggestf[j].userId) {
+        array.push(usersuggest[i])
+         j = usersuggestf.length
+      }
+    }
+  }
+
+ console.log('-->', array, usersuggest,usersuggestf)
+
+
+
+  return array
+}
+
 export async function updateUserFollows(userdocId, profileId, IsFollow) {
   await firebase
     .firestore()
@@ -106,6 +147,35 @@ export async function getPhotos(userId, following) {
   const result = await firebase
     .firestore()
     .collection('photos')
+    .where('userId', 'in', following[0].following)
+    .get()
+
+  const userFollowedPhotos = result.docs.map((photo) => ({
+    ...photo.data(),
+    docId: photo.id,
+  }))
+
+  const photosWithUserDetails = await Promise.all(
+    userFollowedPhotos.map(async (photo) => {
+      let userLikePhoto = false
+
+      if (photo.likes.includes(userId)) {
+        userLikePhoto = true
+      }
+      const user = await getUserByUserId(photo.userId)
+      const { username } = user[0]
+
+      return { username, ...photo, userLikePhoto }
+    })
+  )
+
+  return photosWithUserDetails
+}
+
+export async function getPhotosHistory(userId, following) {
+  const result = await firebase
+    .firestore()
+    .collection('photos-history')
     .where('userId', 'in', following[0].following)
     .get()
 
@@ -186,10 +256,8 @@ export async function getUserPhotosByName(username) {
 }
 
 export async function isUserFollowingProfile(LoggedInUser, profileUserId) {
-  
   console.log('LoggedInUser, profileUserId', LoggedInUser, profileUserId)
-  const r = 
-    await firebase
+  const r = await firebase
     .firestore()
     .collection('users')
     .where('username', '==', LoggedInUser)
@@ -199,21 +267,27 @@ export async function isUserFollowingProfile(LoggedInUser, profileUserId) {
   const [rs = {}] = r.docs.map((item) => ({
     ...item.data(),
   }))
-   console.log('rs', rs)
+  console.log('rs', rs)
 
   return rs.userId
-
- 
 }
 
-export async function toggleFollow(isFollowing,activeUserDocId, profileDocId,
-  followingUserId , followerUserId
-  ){
+export async function toggleFollow(
+  isFollowing,
+  activeUserDocId,
+  profileDocId,
+  followingUserId,
+  followerUserId
+) {
+  console.log(
+    'docs :',
+    isFollowing,
+    activeUserDocId,
+    profileDocId,
+    followingUserId
+  )
+  await updateUserFollows(activeUserDocId, followingUserId, isFollowing)
+  await updateFollowUser(profileDocId, followerUserId, isFollowing)
 
-    console.log('docs :',isFollowing, activeUserDocId, profileDocId, followingUserId)
-    await updateUserFollows(activeUserDocId, followingUserId, isFollowing)
-    await updateFollowUser(profileDocId, followerUserId, isFollowing)
-
-    console.log('toggleFollowUpdate');
-
+  console.log('toggleFollowUpdate')
 }

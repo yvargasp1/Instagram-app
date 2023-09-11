@@ -1,6 +1,7 @@
 import { func } from 'prop-types'
 import user from '../components/sidebar-suggested/user'
 import { firebase, FieldValue } from '../lib/firebase'
+import {ref, uploadBytes, getStorage} from "firebase/storage"
 
 export async function doesUsernameExists(username) {
   const result = await firebase
@@ -290,4 +291,15 @@ export async function toggleFollow(
   await updateFollowUser(profileDocId, followerUserId, isFollowing)
 
   console.log('toggleFollowUpdate')
+}
+
+export async function uploadImage(image){
+  const storage =  getStorage()
+  
+    console.log('Upload')
+    const imageRef =  ref(storage,`images/${image.name}`)
+    uploadBytes(imageRef, image).then(function () {
+      console.log('Upload Image')
+    })
+  
 }

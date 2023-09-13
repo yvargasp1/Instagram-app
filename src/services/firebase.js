@@ -1,5 +1,3 @@
-import { func } from 'prop-types'
-import user from '../components/sidebar-suggested/user'
 import { firebase, FieldValue } from '../lib/firebase'
 import {ref, uploadBytes, getStorage} from "firebase/storage"
 
